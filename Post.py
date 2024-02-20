@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 class Post:
-
     def __init__(self, username):
         self.owner = username
         self.comments = []
@@ -24,12 +23,12 @@ class TextPost(Post):
 
 
 class ImagePost(Post):
-    def __init__(self, image_path):
+    def __init__(self, image_path, username):
         self.image = image_path
-        super().__init__()
+        super().__init__(username)
 
     def display_image(self):
-        img = mpimg.imread(self.image_path)
+        img = mpimg.imread(self.image)
         plt.imshow(img)
         plt.axis('off')  # Turn off axis
         plt.show()
@@ -46,7 +45,8 @@ class SalePost(Post):
         super().__init__(username)
 
     def print_post(self):
-        print(self.owner + " posted a product for sale:\n" + self.description + ", price: " + self.price + ", pick up from: " + self.place)
+        print(self.owner + " posted a product for sale:\n" + self.description + ", price: " + self.price +
+              ", pick up from: " + self.place)
 
     def update_price(self, discount_percent, password):
         try:
