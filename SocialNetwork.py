@@ -29,16 +29,17 @@ class SocialNetwork:
             return user1
         raise (Exception("The username " + username + " already exists"))
 
-    def logout(self, username):
+    def log_out(self, username):
         print(username + " disconnected")
 
         for user in self.users:
-            if user.name == username:
-                user.state(False)
+            if user.username == username:
+                user.update_state(False)
 
     def log_in(self,username,password):
         for user in self.users:
-            if user.name == username and user.password == password:
-                user.state(True)
+            if user.username == username and user.password == password:
+                user.update_state(True)
+                print(username + " connected")
                 return
         raise (Exception("no such user with this details"))
