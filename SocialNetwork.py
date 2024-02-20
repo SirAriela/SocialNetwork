@@ -1,22 +1,13 @@
 from User import User
 
-class Observer:
-    def __init__(self):
-        self.state = True
 
-    def updateUserState(self, content):
-        self.state = content
-
-
-
-
-class SocialNetwork():
+class SocialNetwork:
     _instance = None
 
     def __new__(cls, name):
         if cls._instance is None:
             print("The social network " + name + " was created!")
-            cls._instance = super().__new__(cls);
+            cls._instance = super().__new__(cls)
             cls._instance.name = name
             cls._instance.users = []
             return cls._instance
@@ -27,8 +18,16 @@ class SocialNetwork():
             temp += user.__str__()+ "\n"
         return temp
 
-    def sing_up(username, password):
-        user1 = User(username, password)
+    def sign_up(self, username, password):
+        flag = True
+        for user in self.users:
+            if user.username == username:
+                flag = False
+        if flag:
+            user1 = User(username, password)
+            self.users.append(user1)
+            return user1
+        raise (Exception("The username " + username + " already exists"))
 
     def logout(self, username):
         print(username + " disconnected")
@@ -39,5 +38,7 @@ class SocialNetwork():
 
     def log_in(self,username,password):
         for user in self.users:
-            if user.name == username:
-                user.state(False)
+            if user.name == username and user.password == password:
+                user.state(True)
+                return
+        raise (Exception("no such user with this details"))
