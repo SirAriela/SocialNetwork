@@ -1,5 +1,5 @@
 from User import User
-
+from Post import Post
 
 class SocialNetwork:
     _instance = None

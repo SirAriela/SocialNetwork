@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
+import User
 
 class PostFactory:
+
     def create_post(user, post_type, *args):
         temp = args[0]
         list_data= list(temp)
@@ -23,12 +24,17 @@ class Post:
         self.comments = []
         self.likes = []
 
-    def update_likes(self, new_user):
+    def like(self, new_user):
         if new_user not in self.likes:
             self.likes.append(new_user)
+        message = f"{new_user.username} liked your post"
+        if new_user != self.owner:
+           self.owner.update(message)
 
-    def add_comment(self, new_comment):
+    def comment(self, new_user, new_comment):
         self.comments.append(new_comment)
+        message = f"{new_user.username} commented on your post: {new_comment}"
+        self.owner.update(message)
 
 
 class TextPost(Post):
@@ -45,7 +51,7 @@ class ImagePost(Post):
         super().__init__(user)
         self.image_path = path
 
-    def display_image(self):
+    def display(self):
         img = mpimg.imread(self.image_path)
         plt.imshow(img)
         plt.axis('off')  # Turn off axis
@@ -76,11 +82,11 @@ class SalePost(Post):
         except AttributeError:
             raise AttributeError("Owner has no password set.")
 
-    def change_availability(self, password):
+    def sold(self, password):
         try:
             if self.owner.password == password:
                 self.availability = False
-                print(self.owner + "'s product is sold")
+                print(self.owner.username + "'s product is sold")
             else:
                 raise ValueError("Invalid password. Availability update failed.")
         except AttributeError:

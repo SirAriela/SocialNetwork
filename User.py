@@ -16,16 +16,20 @@ class User:
 
     def follow(self, user):
         self.following.append(user)
-        # notify to the other user and add to followers
+        user.followers.append(self)
+        print(self.username+ " started following "+ user.username)
 
     def unfollow(self, user):
         self.following.remove(user)
-        # notify the other user following list
+        user.followers.remove(self)
+        print(self.username + " unfollowed " + user.username)
 
     def publish_post(self, type, *args):
         post = PostFactory.create_post(self, type, args)
         print(post)
         self.post.append(post)
+        self.notifyFollowers()
+        return post
 
     # def publish_post(self, type, text, price, location):
     #     post = PostFactory.create_post(self, type, text, price, location)
@@ -33,10 +37,23 @@ class User:
     #     self.post.append(post)
 
     def __str__(self):
-        data = "User name: " + self.username + "," + " Number of posts: " + len(
-            self.post) + ", Number of followers: " + len(self.followers)
+        data = "User name: " + self.username + "," + " Number of posts: " + str(len(
+            self.post)) + ", Number of followers: " + str(len(self.followers))
         return data
 
+    def notifyFollowers(self):
+        message = f"{self.username} has a new post"
+        for user in self.followers:
+            user.notifications.append(message)
+
+
+    def update(self, message):
+        print(f"notification to {self.username}: {message}")
+        self.notifications.append(message)
+
+
     def print_notifications(self):
+        print(self.username + "'s notifications:")
         for notification in self.notifications:
             print(notification)
+
