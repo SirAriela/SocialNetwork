@@ -17,7 +17,7 @@ class User:
     def follow(self, user):
         self.following.append(user)
         user.followers.append(self)
-        print(self.username+ " started following "+ user.username)
+        print(self.username + " started following " + user.username)
 
     def unfollow(self, user):
         self.following.remove(user)
@@ -46,14 +46,11 @@ class User:
         for user in self.followers:
             user.notifications.append(message)
 
-
-    def update(self, message):
+    def update(self, message, type):
         print(f"notification to {self.username}: {message}")
-        self.notifications.append(message)
-
+        self.notifications.append(type)
 
     def print_notifications(self):
         print(self.username + "'s notifications:")
         for notification in self.notifications:
             print(notification)
-
