@@ -15,26 +15,41 @@ class User:
         self.state = state
 
     def follow(self, user):
-        self.following.append(user)
-        user.followers.append(self)
-        print(self.username + " started following " + user.username)
+        try:
+            if (self.username in user.followers) or (self.username == user.username):
+                raise Exception("You cannot following yourself or you already follow " + user.username)
+            else:
+                self.following.append(user)
+                user.followers.append(self)
+                print(self.username + " started following " + user.username)
+
+        except Exception as e:
+            print("there is an error: ", e)
 
     def unfollow(self, user):
-        self.following.remove(user)
-        user.followers.remove(self)
-        print(self.username + " unfollowed " + user.username)
+        try:
+            if self in user.followers:
+                self.following.remove(user)
+                user.followers.remove(self)
+                print(self.username + " unfollowed " + user.username)
+
+            else:
+                raise Exception("you dont follow " + user.username)
+        except Exception as e:
+            print("there is an error: ", e)
 
     def publish_post(self, type, *args):
-        post = PostFactory.create_post(self, type, args)
-        print(post)
-        self.post.append(post)
-        self.notifyFollowers()
-        return post
-
-    # def publish_post(self, type, text, price, location):
-    #     post = PostFactory.create_post(self, type, text, price, location)
-    #     print(post)
-    #     self.post.append(post)
+        try:
+            if self.state:
+                post = PostFactory.create_post(self, type, args)
+                print(post)
+                self.post.append(post)
+                self.notifyFollowers()
+                return post
+            else:
+                raise Exception("cannot make this action. user is not connected")
+        except Exception as e:
+            print("there is an error: ", e)
 
     def __str__(self):
         data = "User name: " + self.username + "," + " Number of posts: " + str(len(

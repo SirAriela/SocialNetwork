@@ -5,18 +5,22 @@ import matplotlib.image as mpimg
 class PostFactory:
 
     def create_post(user, post_type, *args):
-        temp = args[0]
-        list_data = list(temp)
+        try:
+            temp = args[0]
+            list_data = list(temp)
 
-        if post_type == "Text":
-            return TextPost(user, list_data[0])
-        elif post_type == "Image":
-            return ImagePost(user, list_data[0])
-        elif post_type == "Sale":
-            temp2 = SalePost(user, list_data[0], list_data[1], list_data[2])
-            return temp2
-        else:
-            raise ValueError("Invalid post type")
+            if post_type == "Text":
+                return TextPost(user, list_data[0])
+            elif post_type == "Image":
+                return ImagePost(user, list_data[0])
+            elif post_type == "Sale":
+                temp2 = SalePost(user, list_data[0], list_data[1], list_data[2])
+                return temp2
+            else:
+                raise Exception("Invalid post type: " + post_type)
+
+        except Exception as e:
+            print("there is an error: ", e)
 
 
 class Post:
@@ -26,17 +30,30 @@ class Post:
         self.likes = []
 
     def like(self, new_user):
-        if new_user not in self.likes:
-            self.likes.append(new_user)
-        message = f"{new_user.username} liked your post"
-        if new_user != self.owner:
-            self.owner.update(message,message)
+        try:
+            if new_user.state:
+                if new_user not in self.likes:
+                    self.likes.append(new_user)
+                    message = f"{new_user.username} liked your post"
+                    if new_user != self.owner:
+                        self.owner.update(message, message)
+            else:
+                raise Exception("cannot do this action. user is not connected")
+        except Exception as e:
+            print("there is an error: ", e)
 
     def comment(self, new_user, new_comment):
-        self.comments.append(new_comment)
-        message = f"{new_user.username} commented on your post: {new_comment}"
-        commented = f"{new_user.username} commented on your post"
-        self.owner.update(message, commented)
+        try:
+            if new_user.state:
+                self.comments.append(new_comment)
+                message = f"{new_user.username} commented on your post: {new_comment}"
+                commented = f"{new_user.username} commented on your post"
+                self.owner.update(message, commented)
+            else:
+                raise Exception("cannot do this action. user is not connected")
+
+        except Exception as e:
+            print("there is an error: ", e)
 
 
 class TextPost(Post):
@@ -83,13 +100,16 @@ class SalePost(Post):
 
     def discount(self, discount_percent, password):
         try:
-            if self.owner.password == password:
-                self.price = ((100 - discount_percent) / 100) * self.price
-                print("Discount on " + self.owner.username + " product! the new price is: " + str(self.price))
+            if 100 >= discount_percent > 0:
+                if self.owner.password == password:
+                    self.price = ((100 - discount_percent) / 100) * self.price
+                    print("Discount on " + self.owner.username + " product! the new price is: " + str(self.price))
+                else:
+                    raise Exception("Invalid password. Price update failed.")
             else:
-                raise ValueError("Invalid password. Price update failed.")
-        except AttributeError:
-            raise AttributeError("Owner has no password set.")
+                raise Exception("discount is not in right format. Price update failed.")
+        except Exception as e:
+            print("there is an error: ", e)
 
     def sold(self, password):
         try:
@@ -97,6 +117,6 @@ class SalePost(Post):
                 self.availability = False
                 print(self.owner.username + "'s product is sold")
             else:
-                raise ValueError("Invalid password. Availability update failed.")
-        except AttributeError:
-            raise AttributeError("Owner has no password set.")
+                raise Exception("Invalid password. Availability update failed.")
+        except Exception as e:
+            print("there is an error: ", e)

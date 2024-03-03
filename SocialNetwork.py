@@ -1,6 +1,7 @@
 from User import User
 from Post import Post
 
+
 class SocialNetwork:
     _instance = None
 
@@ -15,31 +16,54 @@ class SocialNetwork:
     def __str__(self):
         temp = self.name + " social network:\n"
         for user in self.users:
-            temp += user.__str__()+ "\n"
+            temp += user.__str__() + "\n"
         return temp
 
     def sign_up(self, username, password):
-        flag = True
+        usarenameFlag = True
+        passwordFlag = True
         for user in self.users:
             if user.username == username:
-                flag = False
-        if flag:
+                usarenameFlag = False
+            if not (len(user.password) >= 4 and len(user.password) <= 8):
+                passwordFlag = False
+        if usarenameFlag and passwordFlag:
             user1 = User(username, password)
             self.users.append(user1)
             return user1
-        raise (Exception("The username " + username + " already exists"))
+        if not usarenameFlag:
+            raise (Exception("The username " + username + " already exists"))
+        if not passwordFlag:
+            raise (Exception("the password is not in the correct format"))
 
     def log_out(self, username):
-        print(username + " disconnected")
-
         for user in self.users:
             if user.username == username:
-                user.update_state(False)
+                try:
+                    if user.state:
+                        user.update_state(False)
+                        print(username + " disconnected")
+                        return
+                    else:
+                         raise Exception(user.username + " is already disconnected")
+                except Exception as e:
+                    print("there is an error: ", e)
 
-    def log_in(self,username,password):
-        for user in self.users:
-            if user.username == username and user.password == password:
-                user.update_state(True)
-                print(username + " connected")
-                return
-        raise (Exception("no such user with this details"))
+    def log_in(self, username, password):
+        found_user = False
+        try:
+            for user in self.users:
+                if user.username == username and user.password == password:
+                    found_user = True
+                    if not user.state:
+                        user.update_state(True)
+                    else:
+                        raise Exception(user.username + " is connected already")
+                    print(username + " connected")
+                    break  # No need to continue searching if user is found
+
+            if not found_user:
+                raise Exception("There is no user with these credentials: " + username)
+
+        except Exception as e:
+            print("There is an error:", e)
